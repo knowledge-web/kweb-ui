@@ -12,11 +12,7 @@ const brainDir = process.env.BRAIN_DIR || '../Brain/B02'
 const brainJsonDir = process.env.BRAIN_JSON_DIR ? process.env.BRAIN_JSON_DIR : path.join(brainDir, '../db') // ex '../Brain/db'
 const port = process.env.PORT || 7575
 
-const config = { }
-config.hideBrainId = process.env.HIDE_BRAINID === 'false' ? false : true
-config.hidePrivate = process.env.HIDE_PRIVATE === 'false' ? false : true
-config.hideWip = process.env.HIDE_WIP === 'false' ? false : true
-config.rootNode = process.env.ROOT_NODE || '335994d7-2aff-564c-9c20-d2c362e82f8c' // "Knowledge Web" node
+const rootNode = process.env.ROOT_NODE || '335994d7-2aff-564c-9c20-d2c362e82f8c' // "Knowledge Web" node
 
 let fileCache = {} // { filename, mtimeMs, data }
 function loadJson (name) {
@@ -30,9 +26,6 @@ function loadJson (name) {
 
   if (name === 'thoughts.json') {
     data = data.filter(t => t.ForgottenDateTime === null) // exclude removed
-    if (config.hideWip) data = data.filter(t => !t.Name.includes('Connections 4')) // exclude Connections 4 stuff?
-    // if (config.hidePrivate) data = data.filter(t => t.ACType === 0) // exclude private
-    if (config.hideBrainId) data.forEach(node => { delete node.brainId })
   } else if (name === 'links.json') {
     const nodes = loadJson('thoughts.json')
     const map = mapFrom(nodes)
@@ -78,7 +71,7 @@ app.use('/ui', express.static('./ui'))
 // TODO move to separate file
 const api = express.Router()
 api.get('/nodes/:id?', (req, res) => {
-  const id = req.params.id || config.rootNode
+  const id = req.params.id || rootNode
   // const levels = req.query.levels || 1 // TODO
   const node = getNodes().find(n => n.Id === id)
   if (!node) return res.send({ })
@@ -116,6 +109,11 @@ getNodes()
 getLinks()
 
 app.use('/api/v0', api)
+
+app.get('/robots.txt', (req, res) => {
+  if (process.env.ROBOTS_OK) return res.sendStatus(404)
+  res.send('User-agent: *\nDisallow: /')
+})
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`)
