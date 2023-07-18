@@ -17,9 +17,10 @@
   <body>
     <div id="mynetwork"></div>
     <script type="text/javascript">
+      const apiUrl = '/api/v0' // ...or https://k-web.ismandatory.com/api/v0
 
       async function fetchNode (id = '') {
-        const res = await fetch(`/nodes/${id}`)
+        const res = await fetch(`${apiUrl}/nodes/${id}`)
         const json = await res.json()
         
         var nodes = new vis.DataSet(json.nodes) // create an array with nodes
