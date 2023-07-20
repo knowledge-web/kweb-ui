@@ -22,3 +22,7 @@ Or for [livereload](https://chrome.google.com/webstore/detail/livereload/jnihajb
 npm i -g livereload
 http-server & livereload
 ```
+
+## ObservableHQ example
+...or play around with this:
+https://observablehq.com/@gorbiz/using-the-k-web-api
