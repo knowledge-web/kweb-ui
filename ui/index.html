@@ -52,7 +52,8 @@
         // xhtml: false
       })
 
-      const apiUrl = '/api/v0' // ...or https://k-web.ismandatory.com/api/v0
+      const MODE = 'local' // TODO make 'external' work
+      const apiUrl =  MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
 
       function contentToHtml (content, id = '') {
         let html = ''
