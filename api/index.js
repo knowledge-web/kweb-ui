@@ -5,6 +5,10 @@ const path = require('path')
 const brainDir = process.env.BRAIN_DIR || '../Brain/B02'
 const brainJsonDir = process.env.BRAIN_JSON_DIR ? process.env.BRAIN_JSON_DIR : path.join(brainDir, '../db') // ex '../Brain/db'
 const rootNode = process.env.ROOT_NODE || '335994d7-2aff-564c-9c20-d2c362e82f8c' // "Knowledge Web" node
+const includeContent = process.env.CONTENT !== 'false'
+
+console.log('config:')
+console.log({ brainDir, brainJsonDir, rootNode, includeContent })
 
 function mapFrom (list, { key } = { key: 'Id' }) {
   const map = {}
@@ -18,7 +22,7 @@ function readFile (file) {
 }
 
 function getContent (id) {
-  if (process.env.CONTENT === 'false') return {}
+  if (!includeContent) return {}
   const f = path.join(brainDir, id)
   if (!fs.existsSync(f) || !fs.statSync(f).isDirectory()) return
   if (!/^[-0-9a-f]{36}$/.test(id)) return
