@@ -52,8 +52,9 @@
         // xhtml: false
       })
 
-      const MODE = 'local' // TODO make 'external' work
-      const apiUrl =  MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
+      // const MODE = 'local' // TODO make 'external' work
+      // const apiUrl =  MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
+      const apiUrl = 'http://localhost:7575/api/v0'
 
       function contentToHtml (content, id = '') {
         let html = ''
@@ -66,17 +67,18 @@
         return html
       }
 
-      async function fetchNode (id = '') {
-        const res = await fetch(`${apiUrl}/nodes/${id}`)
-        const json = await res.json()
+      async function fetchNode (x = '') {
+        const res = await fetch(`${apiUrl}/nodes/${x}`)
+        let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
         
-        var nodes = new vis.DataSet(json.nodes) // create an array with nodes
-        var edges = new vis.DataSet(json.links) // create an array with edges
-
-        const content = contentToHtml(json.content, id)
+        const content = contentToHtml(nodes[id].content, id)
         document.getElementById('content').innerHTML = content
 
-        return { nodes, edges, content }
+        // return { nodes, links } // TODO return here instead!
+        
+        nodes = Object.values(nodes) // XXX adjust to vis.js format
+        nodes.map(node => { node.label = node.name })
+        return { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(links) }
       }
 
       async function load(id = '') {

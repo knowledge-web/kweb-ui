@@ -18,6 +18,7 @@ function readFile (file) {
 }
 
 function getContent (id) {
+  if (process.env.CONTENT === 'false') return {}
   const f = path.join(brainDir, id)
   if (!fs.existsSync(f) || !fs.statSync(f).isDirectory()) return
   if (!/^[-0-9a-f]{36}$/.test(id)) return
@@ -89,7 +90,7 @@ api.get('/nodes/:id?', (req, res) => {
     }
   })
 
-  let nodes = {}
+  const nodes = {}
   nodes[id] = node
 
   links.forEach(l => {
@@ -97,16 +98,35 @@ api.get('/nodes/:id?', (req, res) => {
     nodes[l.to] = map[l.to]
   })
 
-  nodes = Object.values(nodes)
-  nodes = nodes.map(n => {
-    return {
-      id: n.Id,
-      label: n.Name
-    }
-  })
+  // NOTE: this is the data structure used by The Brain
+  // Id: '60d8a959-54b3-4943-b85d-e35b2538f641',
+  // ACType: 0,
+  // ActivationDateTime: 638183896162060300,
+  // BackgroundColor: null,
+  // CreationDateTime: 637904855044173800,
+  // DisplayModificationDateTime: null,
+  // ForegroundColor: 16769104,
+  // ForgottenDateTime: null,
+  // Kind: 1,
+  // Label: null,
+  // LinksModificationDateTime: null,
+  // ModificationDateTime: 638151034348855200,
+  // Name: 'Connections 4',
+  // SyncUpdateId: '79e9d6e3-9f34-45ae-b5e0-8dcab2718296',
+  // SyncSentId: null,
+  // SyncUpdateDateTime: 638182252136439700,
+  // ThoughtIconInfo: '1::0:True:False:0:',
+  // TypeId: null
 
-  const content = getContent(id) || { md: '', html: '' }
-  res.send({ nodes, links, content })
+  for (const [i, node] of Object.entries(nodes)) {
+    nodes[i] = {
+      id: node.Id,
+      name: node.Name,
+      content: (i === id) ? getContent(id) : ''
+    }
+  }
+
+  res.send({ nodes, links, id }) // nodes is a map, links is an array
 })
 
 getNodes()
