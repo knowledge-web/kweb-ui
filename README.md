@@ -1,8 +1,13 @@
 # K-Web
-This is the code behind:
-https://k-web.ismandatory.com/
+This is the code behind: https://k-web.ismandatory.com/ (both the User Interface and the underlying API)
 
-(Both the User Interface and the underlying API).
+Short term vision is being described [here](https://burkives.notion.site/K-Web-User-Interface-Minimal-Product-dc76722ef10b465c8d987e8f16bedc95?pvs=4).
+
+Basically the plan is to build a better version of:  
+![Screenshot of 3 k-web prototypes](old-prototypes.png)
+
+## Limitations
+Biographies are currently only accessable by team members.
 
 ## Contribute
 See [ui/README](ui/README.md).  
