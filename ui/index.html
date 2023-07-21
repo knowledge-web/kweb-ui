@@ -3,6 +3,7 @@
   <head>
     <title>K-Web 0.1</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2285%22>🌐</text></svg>">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto+Mono:400|Roboto:400,b,i,bi'>
     <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style type="text/css">
@@ -15,18 +16,26 @@
         padding: 5px;
       }
       #mynetwork {
-        width: 66vw;
+        width: 62vw;
         height: 100vh;
       }
       #content {
         position: absolute;
         top: 0;
         right: 0;
-        width: 33vw;
+        width: 38vw;
         height: 100vh;
         overflow: scroll;
         padding: 20px;
+        font-family: Roboto;
       }
+
+      #content .metadata { font-family: monospace; }
+      #content .metadata.empty { opacity: 0.25; }
+      #content .type, #content .tags { font-family: monospace; }
+      #content h1 { margin: 0; }
+      #content .one-liner { font-style: italic; }
+      #content .one-liner.empty { opacity: 0.25; }
     </style>
   </head>
   <body>
@@ -66,8 +75,14 @@
           html = content.html
         }
 
-        return `<details class="debug metadata" open><summary>Meta data</summary><pre>${JSON.stringify(node.meta, null, 2)}</pre></details>
-          <h1>${node.name}</h1>${html}`
+        const metaString = JSON.stringify(node.meta, null, 2)
+        
+        return `<details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
+          <div class="type ${!node.type.name ? 'empty' : ''}">Type: ${node.type.name}</div>
+          <h1>${node.name}</h1>
+          <div class="tags">Tags: ${node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ')}</div>
+          <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>
+          ${html}`
       }
 
       async function fetchNode (x = '') {
@@ -114,6 +129,7 @@
 
       async function main () {
         load()
+        // TODO load types & tags details?
       }
       
       main()

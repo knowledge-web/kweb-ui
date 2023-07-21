@@ -119,6 +119,46 @@ function getLinks () {
   return loadJson('links.json')
 }
 
+const Thoughts = {
+  ACType: { Public: 0, Private: 1 },
+  Kind: { Normal: 1, Type: 2, Tag: 4 } // 5 Seems to be "Pinned"
+}
+// const Links = { // TODO from: https://forums.thebrain.com/post/in-links-json-what-are-these-fields-10616870
+//   Relation
+//   NoValue = 0,
+//   Child = 1,
+//   Parent = 2,
+//   Jump = 3,
+//   Sibling = 4,
+
+//   Direction - Binary flags
+//   OneWay = 4, // x1xx, 1 means One-Way Link;
+//   DirectionBA = 2, // xx1x, 0 means A -> B, 1 means B -> A, isBackward
+//   IsDirected = 1, // xxx1, 1 means Is-Directed; xxx0 means Not-Directed
+
+//   Meaning
+//   Normal = 1,
+//   InstanceOf = 2, // Type (A) to Normal Thought (B)
+//   TypeOf = 3, // Super Type (A) to Type (B)
+//   HasEvent = 4,
+//   HasTag = 5, // Tag (A) to Normal or Type Thought (B)
+//   System = 6,
+//   SubTagOf = 7, // Super Tag (A) to Tag (B)
+
+//   Kind
+//   Normal = 1,
+//   Type = 2,
+// }
+
+function getTags (id, map, links) { // map should be a map of all, nodes
+  if (!map[id]) return []
+  links = links.filter(l => l.ThoughtIdA === id || l.ThoughtIdB === id) // remove irrelevant links
+  links = links.map(l => l.ThoughtIdA !== id ? l.ThoughtIdA : l.ThoughtIdB) // get the other id
+  links = links.filter(l => map[l] && map[l].Kind === Thoughts.Kind.Tag) // remove non-tags
+  const tags = links.map(l => ({ id: map[l].Id, name: map[l].Name }))
+  return tags
+}
+
 const api = express.Router()
 
 api.use((req, res, next) => {
@@ -136,53 +176,42 @@ api.get('/nodes/:id?', (req, res) => {
   let links = getLinks().filter(l => l.ThoughtIdA === id || l.ThoughtIdB === id)
   const map = getNodesMap()
 
-  links = links.map(l => {
-    return {
-      from: l.ThoughtIdA,
-      to: l.ThoughtIdB
-    }
-  })
-
   const nodes = {}
   nodes[id] = node
 
   links.forEach(l => {
-    nodes[l.from] = map[l.from]
-    nodes[l.to] = map[l.to]
+    nodes[l.ThoughtIdA] = map[l.ThoughtIdA]
+    nodes[l.ThoughtIdB] = map[l.ThoughtIdB]
   })
-
-  // NOTE: this is the data structure used by The Brain
-  // Id: '60d8a959-54b3-4943-b85d-e35b2538f641',
-  // ACType: 0,
-  // ActivationDateTime: 638183896162060300,
-  // BackgroundColor: null,
-  // CreationDateTime: 637904855044173800,
-  // DisplayModificationDateTime: null,
-  // ForegroundColor: 16769104,
-  // ForgottenDateTime: null,
-  // Kind: 1,
-  // Label: null,
-  // LinksModificationDateTime: null,
-  // ModificationDateTime: 638151034348855200,
-  // Name: 'Connections 4',
-  // SyncUpdateId: '79e9d6e3-9f34-45ae-b5e0-8dcab2718296',
-  // SyncSentId: null,
-  // SyncUpdateDateTime: 638182252136439700,
-  // ThoughtIconInfo: '1::0:True:False:0:',
-  // TypeId: null
 
   for (const [i, node] of Object.entries(nodes)) {
     let content = ''
     if (includeContent) {
       if (i === id) content = getContent(i) // or remove this if
     }
+
+    const type = { id: node.TypeId, name: map[node.TypeId] ? map[node.TypeId].Name : '' }
+    const tags = getTags(id, map, links)
+    const meta = extractMeta(i)
+    const oneLiner = node.Label || meta.oneliner || meta['one-liner'] || meta.achievements || ''
     nodes[i] = {
       id: node.Id,
       name: node.Name,
+      label: node.Label,
+      oneLiner,
+      type,
+      tags,
       content,
-      meta: extractMeta(i)
+      meta
     }
   }
+
+  links = links.map(l => {
+    return {
+      from: l.ThoughtIdA,
+      to: l.ThoughtIdB
+    }
+  })
 
   res.send({ nodes, links, id }) // nodes is a map, links is an array
 })
