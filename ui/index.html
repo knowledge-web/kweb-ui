@@ -53,24 +53,28 @@
       })
 
       const MODE = 'local' // TODO make 'external' work
-      const apiUrl =  MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
+      let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
+      if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 
-      function contentToHtml (content, id = '') {
+      function contentToHtml (node) {
+        const { content } = node
         let html = ''
         if (content.md) {
-          const md = content.md.replaceAll('.data/md-images/', `/data/${id}/.data/md-images/`)
+          const md = content.md.replaceAll('.data/md-images/', `/data/${node.id}/.data/md-images/`)
           html = marked.parse(md)
         } else if (content.html) {
           html = content.html
         }
-        return html
+
+        return `<details class="debug metadata" open><summary>Meta data</summary><pre>${JSON.stringify(node.meta, null, 2)}</pre></details>
+          <h1>${node.name}</h1>${html}`
       }
 
       async function fetchNode (x = '') {
         const res = await fetch(`${apiUrl}/nodes/${x}`)
         let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
         
-        const content = contentToHtml(nodes[id].content, id)
+        const content = contentToHtml(nodes[id], id)
         document.getElementById('content').innerHTML = content
 
         // return { nodes, links } // TODO return here instead!

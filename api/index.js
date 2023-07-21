@@ -22,14 +22,62 @@ function readFile (file) {
 }
 
 function getContent (id) {
-  if (!includeContent) return {}
   const f = path.join(brainDir, id)
-  if (!fs.existsSync(f) || !fs.statSync(f).isDirectory()) return
-  if (!/^[-0-9a-f]{36}$/.test(id)) return
+  if (!fs.existsSync(f) || !fs.statSync(f).isDirectory()) return {}
+  if (!/^[-0-9a-f]{36}$/.test(id)) return {}
   return {
     md: readFile(path.join(f, 'Notes.md')),
     html: readFile(path.join(f, 'Notes/notes.html'))
   }
+}
+
+function extractMeta (id) {
+  const meta = {}
+
+  const content = getContent(id)
+  let txt = content.md || content.html
+  if (!txt) return {}
+
+  txt = txt.replaceAll(/achievement\(s\):/ig, 'achievements:') // standardize
+  txt = txt.replaceAll(/DATE\/PLACE OF DEATH\/AGE AT DEATH:/ig, 'DATE AND PLACE OF DEATH:')
+
+  const extract = [
+    'NAME',
+    'OTHER-NAME', // things only?
+    'INVENTED/BEGAN', // things only  // XXX can be one dor date & one for place ...also
+    // DATE INVENTED/BEGAN
+    // PLACE INVENTED/BEGAN
+    'ACHIEVEMENTS',
+    'NICKNAME/ALIAS',
+    'DATE AND PLACE OF BIRTH',
+    'DATE AND PLACE OF DEATH',
+    'CATEGORY', // things only?
+    'DISCIPLINE',
+    'FIELD',
+    'LANGUAGE',
+    'PARENTS',
+    'SIBLINGS',
+    'SPOUSE',
+    'CHILDREN',
+    'EDUCATION',
+    'MAJOR WORK',
+    // 'LIFE AND TIMES', // FIXME always several lines...
+    // 'DEAILS', // things only? // FIXME always several lines...
+    'ASSESSMENT',
+    'EXTRA CONNECTIONS', // FIXME often several lines...
+    'ONELINER'
+  ].map(s => s.toLowerCase())
+
+  for (const key of extract) {
+    const pat = key + ':\\s+(.*)'
+    let match = (new RegExp(pat, 'ig').exec(txt) || ['', ''])[1]
+    if (!match) continue
+    match = match.split('<br />')[0]
+    match = match.split('<br/>')[0]
+    match = match.replace(/<\/?[^>]+(>|$)/g, "")
+    meta[key] = match
+  }
+  return meta
 }
 
 const fileCache = {} // { filename, mtimeMs, data }
@@ -44,6 +92,7 @@ function loadJson (name) {
 
   if (name === 'thoughts.json') {
     data = data.filter(t => t.ForgottenDateTime === null) // exclude removed
+    // NOTE CONSIDER extractMeta could also be done here for everything...
   } else if (name === 'links.json') {
     const nodes = loadJson('thoughts.json')
     const map = mapFrom(nodes)
@@ -123,10 +172,15 @@ api.get('/nodes/:id?', (req, res) => {
   // TypeId: null
 
   for (const [i, node] of Object.entries(nodes)) {
+    let content = ''
+    if (includeContent) {
+      if (i === id) content = getContent(i) // or remove this if
+    }
     nodes[i] = {
       id: node.Id,
       name: node.Name,
-      content: (i === id) ? getContent(id) : ''
+      content,
+      meta: extractMeta(i)
     }
   }
 
