@@ -159,6 +159,17 @@ function getTags (id, map, links) { // map should be a map of all, nodes
   return tags
 }
 
+// NOTE copied from K-WEB UI (first version)
+function toColor (num) {
+  if (!num) return null
+  num >>>= 0
+  const b = num & 0xFF
+  const g = (num & 0xFF00) >>> 8
+  const r = (num & 0xFF0000) >>> 16
+  // const a = ( (num & 0xFF000000) >>> 24 ) / 255
+  return `rgb(${[r, g, b].join(',')})`
+}
+
 const api = express.Router()
 
 api.use((req, res, next) => {
@@ -199,6 +210,8 @@ api.get('/nodes/:id?', (req, res) => {
       name: node.Name,
       label: node.Label,
       oneLiner,
+      color: toColor(node.ForegroundColor),
+      // bgColor: toColor(node.BackgroundColor), // never used? (I saw once)
       type,
       tags,
       content,

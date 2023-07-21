@@ -33,9 +33,18 @@
       #content .metadata { font-family: monospace; }
       #content .metadata.empty { opacity: 0.25; }
       #content .type, #content .tags { font-family: monospace; }
-      #content h1 { margin: 0; }
       #content .one-liner { font-style: italic; }
       #content .one-liner.empty { opacity: 0.25; }
+
+      #content h1 {
+        margin: 0;
+        background: #888;
+        display: inline;
+        padding: 0 8px;
+        margin-top: 4px;
+        border-radius: 5px;
+        top: 10px;
+      }
     </style>
   </head>
   <body>
@@ -76,10 +85,9 @@
         }
 
         const metaString = JSON.stringify(node.meta, null, 2)
-        
         return `<details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
           <div class="type ${!node.type.name ? 'empty' : ''}">Type: ${node.type.name}</div>
-          <h1>${node.name}</h1>
+          <h1 style="color: ${node.color};">${node.name}</h1>
           <div class="tags">Tags: ${node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ')}</div>
           <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>
           ${html}`
