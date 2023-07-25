@@ -92,6 +92,12 @@ function loadJson (name) {
 
   if (name === 'thoughts.json') {
     data = data.filter(t => t.ForgottenDateTime === null) // exclude removed
+
+    // exclude thoughts not in wiki-links?
+    // const wikiLinks = require('../../wiki-links.json')
+    // const wikiLinkNames = Object.keys(wikiLinks)
+    // data = data.filter(t => wikiLinkNames.includes(t.Name)) // exclude thoughts not in wiki-links
+
     // NOTE CONSIDER extractMeta could also be done here for everything...
   } else if (name === 'links.json') {
     const nodes = loadJson('thoughts.json')
@@ -187,13 +193,18 @@ api.get('/nodes/:id?', (req, res) => {
   let links = getLinks().filter(l => l.ThoughtIdA === id || l.ThoughtIdB === id)
   const map = getNodesMap()
 
-  const nodes = {}
+  let nodes = {}
   nodes[id] = node
 
   links.forEach(l => {
     nodes[l.ThoughtIdA] = map[l.ThoughtIdA]
     nodes[l.ThoughtIdB] = map[l.ThoughtIdB]
   })
+
+  // remove Kind != Normal
+  nodes = Object.values(nodes).filter(n => n.Kind === Thoughts.Kind.Normal)
+  nodes = mapFrom(nodes)
+    
 
   for (const [i, node] of Object.entries(nodes)) {
     let content = ''

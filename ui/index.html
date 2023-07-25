@@ -104,6 +104,7 @@
         
         nodes = Object.values(nodes) // XXX adjust to vis.js format
         nodes.map(node => { node.label = node.name })
+        
         return { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(links) }
       }
 
@@ -121,11 +122,16 @@
         var network = new vis.Network(container, data, options)
 
         // TODO more events... see https://visjs.github.io/vis-network/docs/network/#Events
+
+        async function goto (id) {
+          const { nodes, edges } = await fetchNode(id)
+          window.location.hash = `id=${id}`
+          network.setData({ nodes, edges })
+        }
+
         network.on('selectNode', async function (params) {
           const id = params.nodes[0]
-          const { nodes, edges } = await fetchNode(id)
-          network.setData({ nodes, edges })
-
+          goto(id)
           // params.event = "[original event]";
           // document.getElementById("eventSpan").innerHTML =
           //   "<h2>Click event:</h2>" + JSON.stringify(params, null, 4);
@@ -133,10 +139,16 @@
           //   "click event, getNodeAt returns: " + this.getNodeAt(params.pointer.DOM)
           // );
         })
+
+        window.onhashchange = async function () {
+          const id = window.location.hash.split('id=')[1]
+          goto(id)
+        }
       }
 
       async function main () {
-        load()
+        const id = window.location.hash.split('id=')[1] // Ex /#id=...
+        load(id)
         // TODO load types & tags details?
       }
       
