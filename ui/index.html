@@ -97,6 +97,12 @@
         const res = await fetch(`${apiUrl}/nodes/${x}`)
         let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
         
+        links = links.map(link => {
+          link.from = link.source
+          link.to = link.target
+          return link
+        })
+
         const content = contentToHtml(nodes[id], id)
         document.getElementById('content').innerHTML = content
 
