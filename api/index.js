@@ -190,7 +190,8 @@ api.get('/nodes/:id?', (req, res) => {
   const node = getNodes().find(n => n.Id === id)
   if (!node) return res.send({ })
 
-  let links = getLinks().filter(l => l.ThoughtIdA === id || l.ThoughtIdB === id)
+  const allLinks = getLinks()
+  let links = allLinks.filter(l => l.ThoughtIdA === id || l.ThoughtIdB === id)
   const map = getNodesMap()
 
   let nodes = {}
@@ -204,7 +205,12 @@ api.get('/nodes/:id?', (req, res) => {
   // remove Kind != Normal
   nodes = Object.values(nodes).filter(n => n.Kind === Thoughts.Kind.Normal)
   nodes = mapFrom(nodes)
-    
+  links = links.filter(l => nodes[l.ThoughtIdA] && nodes[l.ThoughtIdB])
+  allLinks.forEach(l => {
+    if (l.ThoughtIdA === id || l.ThoughtIdB === id) return // we already have this one
+    if (nodes[l.ThoughtIdA] && nodes[l.ThoughtIdB]) links.push({ ...l, secundary: true }) // add indirect link
+  })
+
 
   for (const [i, node] of Object.entries(nodes)) {
     let content = ''
@@ -232,8 +238,9 @@ api.get('/nodes/:id?', (req, res) => {
 
   links = links.map(l => {
     return {
-      from: l.ThoughtIdA,
-      to: l.ThoughtIdB
+      name: l.Name || '', // no link description
+      source: l.ThoughtIdA,
+      target: l.ThoughtIdB,
     }
   })
 
