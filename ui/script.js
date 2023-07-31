@@ -1,4 +1,4 @@
-/* global localStorage, fetch, ForceGraph3D */
+/* global localStorage, fetch, ForceGraph3D, SpriteText */
 import { CSS2DRenderer, CSS2DObject } from '//unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js'
 const { marked } = window
 marked.setOptions({
@@ -28,6 +28,11 @@ async function fetchNode (x = '') {
   return { nodes, links, id } // TODO return here instead!
 }
 
+const settings = {
+  // linkStrength: { primary: 0.5, secundary: 0.25 }, // Different link strengths, not a great idea actually
+  dimensions: 2
+}
+
 async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
   const { nodes, links, id } = await fetchNode(x)
@@ -39,7 +44,7 @@ async function main () {
   const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
     .width(w)
-    .numDimensions(2)
+    .numDimensions(settings.dimensions)
     .warmupTicks(100)
     .cooldownTicks(0)
     .graphData(gData)
@@ -47,22 +52,24 @@ async function main () {
     .nodeColor(node => node.color || 'rgba(255,255,255,0.8)')
     .nodeLabel(node => node.oneLiner)
     // Link text
-    // XXX Works only in 3D!!!
-    // .linkThreeObjectExtend(true)
-    // .linkThreeObject(link => {
-    //   // extend link with text sprite
-    //   const sprite = new SpriteText(`${link.name}`);
-    //   sprite.color = 'lightgrey';
-    //   sprite.textHeight = 3;
-    //   return sprite;
-    // })
-    // .linkPositionUpdate((sprite, { start, end }) => {
-    //   const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
-    //     [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-    //   })));
-    //   // Position sprite
-    //   Object.assign(sprite.position, middlePos);
-    // })
+    .linkThreeObjectExtend(true)
+    .linkThreeObject(link => {
+      console.log(link.name)
+      // extend link with text sprite
+      const sprite = new SpriteText(`${link.name}`)
+      sprite.color = link.color || 'white'
+      sprite.textHeight = 3
+      // sprite.rotation = 100
+      return sprite
+    })
+    .linkPositionUpdate((sprite, { start, end }) => {
+      const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
+        [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+      })))
+      if (settings.dimensions === 2) middlePos.z = 0
+      // Position sprite
+      Object.assign(sprite.position, middlePos)
+    })
 
     .nodeThreeObject(node => {
       const nodeEl = document.createElement('div')
@@ -91,10 +98,6 @@ async function main () {
   graph.cameraPosition({ z: 275 })
   // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
 
-  // different link strengths
-  const settings = {
-    // linkStrength: { primary: 0.5, secundary: 0.25 } // Not a great idea actually
-  }
   if (settings.linkStrength) graph.d3Force('link').strength(link => link.secundary ? settings.linkStrength.secundary : settings.linkStrength.primary)
 
   // graph.numDimensions(2); // Re-heat simulation
