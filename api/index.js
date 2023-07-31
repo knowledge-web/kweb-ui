@@ -74,7 +74,7 @@ function extractMeta (id) {
     if (!match) continue
     match = match.split('<br />')[0]
     match = match.split('<br/>')[0]
-    match = match.replace(/<\/?[^>]+(>|$)/g, "")
+    match = match.replace(/<\/?[^>]+(>|$)/g, '')
     meta[key] = match
   }
   return meta
@@ -208,9 +208,12 @@ api.get('/nodes/:id?', (req, res) => {
   links = links.filter(l => nodes[l.ThoughtIdA] && nodes[l.ThoughtIdB])
   allLinks.forEach(l => {
     if (l.ThoughtIdA === id || l.ThoughtIdB === id) return // we already have this one
-    if (nodes[l.ThoughtIdA] && nodes[l.ThoughtIdB]) links.push({ ...l, secundary: true }) // add indirect link
+    if (nodes[l.ThoughtIdA] && nodes[l.ThoughtIdB]) {
+      const link = { ...l, secundary: true } // add indirect link
+      // console.log({ link })
+      links.push(link)
+    }
   })
-
 
   for (const [i, node] of Object.entries(nodes)) {
     let content = ''
@@ -241,6 +244,8 @@ api.get('/nodes/:id?', (req, res) => {
       name: l.Name || '', // no link description
       source: l.ThoughtIdA,
       target: l.ThoughtIdB,
+      color: toColor(l.Color),
+      secundary: l.secundary
     }
   })
 
