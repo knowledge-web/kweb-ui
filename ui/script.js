@@ -1,4 +1,20 @@
 import { CSS2DRenderer, CSS2DObject } from '//unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js'
+const { marked } = window
+marked.setOptions({
+  // renderer: new marked.Renderer(),
+  // highlight: function(code, lang) {
+  //   const hljs = require('highlight.js');
+  //   const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+  //   return hljs.highlight(code, { language }).value;
+  // },
+  // langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class.
+  // pedantic: false,
+  gfm: true,
+  breaks: true,
+  // sanitize: false,
+  // smartypants: false,
+  // xhtml: false
+})
 
 const MODE = 'local' // TODO make 'external' work
 let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
@@ -15,11 +31,14 @@ async function fetchNode (x = '') {
 async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
   const { nodes, links, id } = await fetchNode(x)
+  loadContent(nodes[id])
 
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
   
-  const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('3d-graph'))
+  const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
+  const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
+    .width(w)
     .numDimensions(2)
     .cooldownTicks(100)
     .graphData(gData)
@@ -46,8 +65,7 @@ async function main () {
     // })
 
     .nodeThreeObject(node => {
-      console.log(node.color)
-      const nodeEl = document.createElement('div');
+      const nodeEl = document.createElement('div')
       nodeEl.textContent = node.name;
       // const img = 'https://picsum.photos/seed/derp/150/150' // random profile image
       // nodeEl.innerHTML = `${node.name}<br><img class="prof" src="${img}" />`
@@ -61,7 +79,7 @@ async function main () {
       window.location.hash = `id=${node.id}`
     })
 
-    graph.cameraPosition({ z: 250 })
+    graph.cameraPosition({ z: 275 })
     // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
 
   const settings = { // NOTE not working as I wanted...
@@ -75,10 +93,40 @@ async function main () {
 
   // graph.numDimensions(2); // Re-heat simulation
 
+  function contentToHtml (node) {
+    const { content } = node
+    let html = ''
+    let type = ''
+    if (content.md) {
+      const md = content.md.replaceAll('.data/md-images/', `/data/${node.id}/.data/md-images/`)
+      html = marked.parse(md)
+      type = 'markdown'
+    } else if (content.html) {
+      html = content.html
+      type = 'html'
+    }
+
+    const metaString = JSON.stringify(node.meta, null, 2)
+    return `<div class="content-type">${type}</div>
+      <details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
+      <div class="type ${!node.type.name ? 'empty' : ''}">Type: ${node.type.name}</div>
+      <h1 style="color: ${node.color};">${node.name}</h1>
+      <div class="tags">Tags: ${node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ')}</div>
+      <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>
+      ${html}`
+  }
+  function loadContent (node) {
+    const html = contentToHtml(node)
+    const element = document.getElementById('content')
+    element.innerHTML = html
+    element.scrollTop = 0
+  }
+
   async function goto (id) {
     const { nodes, links } = await fetchNode(id)
     const gData = { nodes: Object.values(nodes), links }
     graph.graphData(gData)
+    loadContent(nodes[id])
   }
 
   window.onhashchange = async function () {
