@@ -1,3 +1,4 @@
+/* global localStorage, fetch, ForceGraph3D */
 import { CSS2DRenderer, CSS2DObject } from '//unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js'
 const { marked } = window
 marked.setOptions({
@@ -10,7 +11,7 @@ marked.setOptions({
   // langPrefix: 'hljs language-', // highlight.js css expects a top-level 'hljs' class.
   // pedantic: false,
   gfm: true,
-  breaks: true,
+  breaks: true
   // sanitize: false,
   // smartypants: false,
   // xhtml: false
@@ -23,10 +24,9 @@ if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 async function fetchNode (x = '') {
   console.log(`${apiUrl}/nodes/${x}`)
   const res = await fetch(`${apiUrl}/nodes/${x}`)
-  let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
+  const { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
   return { nodes, links, id } // TODO return here instead!
 }
-
 
 async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
@@ -35,12 +35,13 @@ async function main () {
 
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
-  
+
   const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
     .width(w)
     .numDimensions(2)
-    .cooldownTicks(100)
+    // .cooldownTicks(100)
+    .warmupTicks(10)
     .graphData(gData)
     .nodeRelSize(3)
     .nodeColor(node => node.color || 'rgba(255,255,255,0.8)')
@@ -59,14 +60,13 @@ async function main () {
     //   const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
     //     [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
     //   })));
-
     //   // Position sprite
     //   Object.assign(sprite.position, middlePos);
     // })
 
     .nodeThreeObject(node => {
       const nodeEl = document.createElement('div')
-      nodeEl.textContent = node.name;
+      nodeEl.textContent = node.name
       // const img = 'https://picsum.photos/seed/derp/150/150' // random profile image
       // nodeEl.innerHTML = `${node.name}<br><img class="prof" src="${img}" />`
       nodeEl.style.color = node.color || 'rgba(255,255,255,0.8)'
@@ -79,17 +79,17 @@ async function main () {
       window.location.hash = `id=${node.id}`
     })
 
-    graph.cameraPosition({ z: 275 })
-    // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
+  graph.cameraPosition({ z: 275 })
+  // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
 
-  const settings = { // NOTE not working as I wanted...
-    // TODO strength instead of distance!!?
-    primaryDistance: 50,
-    secundaryDistance: 50
-  }
-  const linkForce = graph
-    .d3Force('link')
-    .distance(link => link.secundary ? settings.secundaryDistance : settings.primaryDistance)
+  // const settings = { // NOTE not working as I wanted...
+  //   // TODO strength instead of distance!!?
+  //   primaryDistance: 50,
+  //   secundaryDistance: 50
+  // }
+  // const linkForce = graph
+  //   .d3Force('link')
+  //   .distance(link => link.secundary ? settings.secundaryDistance : settings.primaryDistance)
 
   // graph.numDimensions(2); // Re-heat simulation
 
