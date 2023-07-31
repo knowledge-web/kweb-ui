@@ -49,7 +49,8 @@ async function main () {
       console.log(node.color)
       const nodeEl = document.createElement('div');
       nodeEl.textContent = node.name;
-      // console.log(node.name)
+      // const img = 'https://picsum.photos/seed/derp/150/150' // random profile image
+      // nodeEl.innerHTML = `${node.name}<br><img class="prof" src="${img}" />`
       nodeEl.style.color = node.color || 'rgba(255,255,255,0.8)'
       nodeEl.className = 'node-label'
       return new CSS2DObject(nodeEl)
