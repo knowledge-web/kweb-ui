@@ -17,6 +17,12 @@
         z-index: 10;
         padding: 5px;
       }
+
+      .node-label {
+        font-family: 'Droid Sans'; /* TODO improve? */
+        position: relative;
+        top: -1.5em;
+      }
     </style>
   </head>
   <body>
@@ -24,71 +30,7 @@
     
     <div id="3d-graph"></div>
     
-    <script type="text/javascript">
-      const MODE = 'local' // TODO make 'external' work
-      let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
-      if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
-
-      async function fetchNode (x = '') {
-        console.log(`${apiUrl}/nodes/${x}`)
-        const res = await fetch(`${apiUrl}/nodes/${x}`)
-        let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
-        return { nodes, links, id } // TODO return here instead!
-      }
-
-
-      async function main () {
-        const x = window.location.hash.split('id=')[1] // Ex /#id=...
-        const { nodes, links, id } = await fetchNode(x)
-
-        const gData = { nodes: Object.values(nodes), links }
-
-        const graph = ForceGraph3D()(document.getElementById('3d-graph'))
-          .numDimensions(2)
-          .graphData(gData)
-          // Works only in 3D!!!
-          // .linkThreeObjectExtend(true)
-          // .linkThreeObject(link => {
-          //   // extend link with text sprite
-          //   const sprite = new SpriteText(`${link.name}`);
-          //   sprite.color = 'lightgrey';
-          //   sprite.textHeight = 3;
-          //   return sprite;
-          // })
-          // .linkPositionUpdate((sprite, { start, end }) => {
-          //   const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
-          //     [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
-          //   })));
-
-          //   // Position sprite
-          //   Object.assign(sprite.position, middlePos);
-          // })
-
-        const settings = { // NOTE not working as I wanted...
-          // TODO strength instead of distance!!?
-          primaryDistance: 50,
-          secundaryDistance: 50
-        }
-        const linkForce = graph
-          .d3Force('link')
-          .distance(link => link.secundary ? settings.secundaryDistance : settings.primaryDistance)
-
-        // graph.numDimensions(2); // Re-heat simulation
-
-        async function goto (id) {
-          const { nodes, edges } = await fetchNode(id)
-          window.location.hash = `id=${id}`
-          network.setData({ nodes, edges })
-        }
-
-        window.onhashchange = async function () {
-          const id = window.location.hash.split('id=')[1]
-          goto(id)
-        }
-      }
-      
-
-      main()
-    </script>
+    <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
+    <script type="module" src="script.js"></script>
   </body>
 </html>
