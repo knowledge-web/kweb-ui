@@ -40,10 +40,10 @@ async function main () {
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
     .width(w)
     .numDimensions(2)
-    // .cooldownTicks(100)
-    .warmupTicks(10)
+    .warmupTicks(100)
+    .cooldownTicks(0)
     .graphData(gData)
-    .nodeRelSize(3)
+    .nodeRelSize(2)
     .nodeColor(node => node.color || 'rgba(255,255,255,0.8)')
     .nodeLabel(node => node.oneLiner)
     // Link text
@@ -82,14 +82,11 @@ async function main () {
   graph.cameraPosition({ z: 275 })
   // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
 
-  // const settings = { // NOTE not working as I wanted...
-  //   // TODO strength instead of distance!!?
-  //   primaryDistance: 50,
-  //   secundaryDistance: 50
-  // }
-  // const linkForce = graph
-  //   .d3Force('link')
-  //   .distance(link => link.secundary ? settings.secundaryDistance : settings.primaryDistance)
+  // different link strengths
+  const settings = {
+    linkStrength: { primary: 0.5, secundary: 0 }
+  }
+  graph.d3Force('link').strength(link => link.secundary ? settings.linkStrength.secundary : settings.linkStrength.primary)
 
   // graph.numDimensions(2); // Re-heat simulation
 
