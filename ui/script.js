@@ -74,6 +74,15 @@ async function main () {
       return new CSS2DObject(nodeEl)
     })
     .nodeThreeObjectExtend(true)
+    .linkOpacity(0.66)
+    .linkColor(link => {
+      if (link.color) return link.color
+      if (link.secundary) return 'rgba(127,127,127,0.5)'
+      return 'rgba(255,255,255,0.5)'
+    })
+    .linkCurvature(link => link.secundary ? 0.5 : 0)
+    // .linkDirectionalArrowLength(3)
+    // .linkDirectionalArrowRelPos(1)
     .onNodeClick(node => {
       // goto(node.id)
       window.location.hash = `id=${node.id}`
@@ -84,9 +93,9 @@ async function main () {
 
   // different link strengths
   const settings = {
-    linkStrength: { primary: 0.5, secundary: 0 }
+    // linkStrength: { primary: 0.5, secundary: 0.25 } // Not a great idea actually
   }
-  graph.d3Force('link').strength(link => link.secundary ? settings.linkStrength.secundary : settings.linkStrength.primary)
+  if (settings.linkStrength) graph.d3Force('link').strength(link => link.secundary ? settings.linkStrength.secundary : settings.linkStrength.primary)
 
   // graph.numDimensions(2); // Re-heat simulation
 
