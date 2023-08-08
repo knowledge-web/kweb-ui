@@ -102,7 +102,7 @@ function loadJson (name) {
   } else if (name === 'links.json') {
     const nodes = loadJson('thoughts.json')
     const map = mapFrom(nodes)
-    data = data.filter(l => map[l.ThoughtIdA] && map[l.ThoughtIdB]) // exclude links not linking to available thoughts
+    data = data.filter(l => l.Kind === Links.Kind.Type || (map[l.ThoughtIdA] && map[l.ThoughtIdB])) // exclude links not linking to available thoughts
     // console.log(data.length, '<-- links')
   }
 
@@ -128,6 +128,12 @@ function getLinks () {
 const Thoughts = {
   ACType: { Public: 0, Private: 1 },
   Kind: { Normal: 1, Type: 2, Tag: 4 } // 5 Seems to be "Pinned"
+}
+const Links = {
+  // Relation
+  // Direction - Binary flags
+  // Meaning
+  Kind: { Normal: 1, Type: 2 }
 }
 // const Links = { // TODO from: https://forums.thebrain.com/post/in-links-json-what-are-these-fields-10616870
 //   Relation
@@ -239,9 +245,17 @@ api.get('/nodes/:id?', (req, res) => {
     }
   }
 
+  function getLinkType (typeId) {
+    if (!typeId) return ''
+    typeId = typeId.toLowerCase()
+    const link = allLinks.find(l => l.Id === typeId)
+    return link ? link.Name : ''
+  }
+
   links = links.map(l => {
+    const typeName = getLinkType(l.TypeId, links)
     return {
-      name: l.Name || '', // no link description
+      name: l.Name || typeName,
       source: l.ThoughtIdA,
       target: l.ThoughtIdB,
       color: toColor(l.Color),
