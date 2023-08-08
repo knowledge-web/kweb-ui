@@ -52,13 +52,15 @@ async function main () {
     .nodeColor(node => node.color || 'rgba(255,255,255,0.8)')
     .nodeLabel(node => node.oneLiner)
     // Link text
+    .linkLabel('')
     .linkThreeObjectExtend(true)
     .linkThreeObject(link => {
       console.log(link.name)
       // extend link with text sprite
       const sprite = new SpriteText(`${link.name}`)
-      sprite.color = link.color || 'white'
-      sprite.textHeight = 3
+      // sprite.color = link.color || 'white'
+      sprite.color = 'rgba(127, 196, 255, 0.66)'
+      sprite.textHeight = 2
       // sprite.rotation = 100
       return sprite
     })
