@@ -1,5 +1,6 @@
 /* global localStorage, fetch, ForceGraph3D, SpriteText */
 import { CSS2DRenderer, CSS2DObject } from '//unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js'
+import { GUI } from '//unpkg.com/dat.gui/build/dat.gui.module.js'
 const { marked } = window
 marked.setOptions({
   // renderer: new marked.Renderer(),
@@ -28,11 +29,6 @@ async function fetchNode (x = '') {
   return { nodes, links, id } // TODO return here instead!
 }
 
-const settings = {
-  // linkStrength: { primary: 0.5, secundary: 0.25 }, // Different link strengths, not a great idea actually
-  dimensions: 2
-}
-
 async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
   const { nodes, links, id } = await fetchNode(x)
@@ -40,6 +36,19 @@ async function main () {
 
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
+
+  const gui = new GUI({ closed: true })
+  const settings = {
+    // linkStrength: { primary: 0.5, secundary: 0.25 }, // Different link strengths, not a great idea actually
+    dimensions: 2
+  }
+  gui.add(settings, 'dimensions', { '2D': 2, '3D': 3 }).onChange(dimensions => {
+    graph.numDimensions(dimensions)
+  })
+  const guiElement = gui.domElement
+  guiElement.style.position = 'absolute'
+  guiElement.style.top = '0'
+  guiElement.style.left = '0'
 
   const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
