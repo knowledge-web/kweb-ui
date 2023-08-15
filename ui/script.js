@@ -37,7 +37,7 @@ async function main () {
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
 
-  const gui = new GUI({ closed: true })
+  const gui = new GUI({ closed: false })
   const settings = {
     // linkStrength: { primary: 0.5, secundary: 0.25 }, // Different link strengths, not a great idea actually
     dimensions: 2
@@ -154,6 +154,19 @@ async function main () {
     const id = window.location.hash.split('id=')[1]
     goto(id)
   }
+
+  // TODO?
+  // function resizeGraph () {
+  //   if (graph) {
+  //     const height = document.getElementById('graph').clientHeight
+  //     const width = document.getElementById('graph').clientWidth
+  //     console.log({ width, height })
+  //     graph.width(width)
+  //     graph.height(height)
+  //     graph.controls().handleResize()
+  //   }
+  // }
+  // document.body.onresize = resizeGraph
 }
 
 main()
