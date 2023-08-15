@@ -266,6 +266,24 @@ api.get('/nodes/:id?', (req, res) => {
   res.send({ nodes, links, id }) // nodes is a map, links is an array
 })
 
+api.get('/icons/:id', (req, res) => { // copied from an experiment
+  const fileName = (id) => path.join(__dirname, '..', brainDir, id, '.data', 'Icon.png')
+
+  const { id } = req.params
+  if (!/^[-0-9a-f]{36}$/.test(id)) return
+
+  let file = fileName(id)
+  if (fs.existsSync(file)) return res.sendFile(file)
+
+  const node = getNodes().find(n => n.Id === id)
+  if (node.TypeId) {
+    file = fileName(node.TypeId)
+    if (fs.existsSync(file)) return res.sendFile(file)
+  }
+
+  res.sendFile(path.join(__dirname, '../ui', 'empty.png'))
+})
+
 getNodes()
 getLinks()
 

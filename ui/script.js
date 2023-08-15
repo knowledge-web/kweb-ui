@@ -84,7 +84,8 @@ async function main () {
 
     .nodeThreeObject(node => {
       const nodeEl = document.createElement('div')
-      nodeEl.textContent = node.name
+      nodeEl.innerHTML = `<img src="${apiUrl}/icons/${node.id}" height="16" style="opacity: 1.0;" /> ${node.name}`
+
       // const img = 'https://picsum.photos/seed/derp/150/150' // random profile image
       // nodeEl.innerHTML = `${node.name}<br><img class="prof" src="${img}" />`
       nodeEl.style.color = node.color || 'rgba(255,255,255,0.8)'
@@ -129,9 +130,9 @@ async function main () {
     const metaString = JSON.stringify(node.meta, null, 2)
     return `<div class="content-type">${type}</div>
       <details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
-      <div class="type ${!node.type.name ? 'empty' : ''}">Type: ${node.type.name}</div>
-      <h1 style="color: ${node.color};">${node.name}</h1>
-      <div class="tags">Tags: ${node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ')}</div>
+      <div class="type ${!node.type.name ? 'empty' : ''}">Type: <img src="${apiUrl}/icons/${node.type.id}" height="16" /> ${node.type.name}</div>
+      <h1 style="color: ${node.color};"><img class="icon" src="${apiUrl}/icons/${node.id}" height="32" /> ${node.name}</h1>
+      <div class="tags">Tags: ${node.tags.length ? node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ') : '[none]'}</div>
       <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>
       ${html}`
   }
