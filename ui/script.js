@@ -37,7 +37,7 @@ async function main () {
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
 
-  const gui = new GUI({ closed: false })
+  const gui = new GUI({ closed: true })
   const settings = {
     // linkStrength: { primary: 0.5, secundary: 0.25 }, // Different link strengths, not a great idea actually
     dimensions: 2
