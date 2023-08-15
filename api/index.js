@@ -228,7 +228,7 @@ api.get('/nodes/:id?', (req, res) => {
     }
 
     const type = { id: node.TypeId, name: map[node.TypeId] ? map[node.TypeId].Name : '' }
-    const tags = getTags(id, map, links)
+    const tags = getTags(id, map, allLinks)
     const meta = extractMeta(i)
     const oneLiner = node.Label || meta.oneliner || meta['one-liner'] || meta.achievements || ''
     nodes[i] = {
