@@ -10,60 +10,7 @@
     <script src="//unpkg.com/three-spritetext"></script>
 
     <script src="//unpkg.com/3d-force-graph"></script>
-    <style type="text/css">
-      body {
-        margin: 0;
-        overflow: hidden;
-        background-color: #eed;
-      }
-      
-      #graph {
-        width: 66vw;
-        height: 100vh;
-      }
-      .node-label {
-        font-family: 'Droid Sans'; /* TODO improve? */
-        position: relative;
-        top: -1.5em;
-      }
-    
-      #content {
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 35vw; /*NOTE makes no sense but looks right */
-        height: 100vh;
-        overflow: scroll;
-        padding: 0;
-        font-family: Roboto;
-      }
-
-      #content .content-type { font-family: monospace; position: absolute; top: 0; right: 0; opacity: 0.25; }
-      #content .metadata { font-family: monospace; }
-      #content .metadata.empty { opacity: 0.25; }
-      #content .type, #content .tags { font-family: monospace; }
-      #content .one-liner { font-style: italic; }
-      #content .one-liner.empty { opacity: 0.25; }
-
-      #content h1 {
-        margin: 0;
-        background: #888;
-        display: inline;
-        padding: 0 8px;
-        margin-top: 4px;
-        border-radius: 5px;
-        top: 10px;
-      }
-
-      #info {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        z-index: 10;
-        padding: 5px;
-      }
-      #info a { color: #888; }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
     <div id="info"><a href="/info">What is this?</a></div>
