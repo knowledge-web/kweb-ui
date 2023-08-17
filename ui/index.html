@@ -14,7 +14,7 @@
   </head>
   <body>
     <style>
-      #search-bar {
+      #search-container {
         position: absolute;
         top: 4px;
         left: 35%;
@@ -24,13 +24,38 @@
       #search-bar input[type="text"] {
         width: 300px;
       }
+      #search-container {
+        display: flex;
+        flex-direction: column;
+      }
+      #search-container .results {
+        margin-top: 4px;
+        font-family: Arial, sans-serif;
+        color: white;
+        /* background-color: rgba(255, 255, 255, 0.1); */
+        background: black;
+        z-index: 10;
+      }
+      #search-container .results a {
+        display: block;
+        width: 100%;
+        color: #eee;
+        text-decoration: none;
+      }
+      #search-container .results a:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
     </style>
-    <div id="search-bar" style="display: flex; justify-content: center; align-items: center; position: absolute;">
-      <form style="display: flex; justify-content: center; align-items: center;">
-        <!-- <input class="search" type="text" placeholder="Search..." style="padding: 10px; border-radius: 5px; border: none; margin-right: 10px;"> -->
-        <!-- <button class="search" type="submit" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; margin-right: 10px;">🔎 Search</button> -->
-        <button class="random" type="button" onclick="" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; cursor: pointer;">🎲</button>
-      </form>
+    <div id="search-container">
+      <div id="search-bar" style="display: flex; justify-content: center; align-items: center;">
+        <form style="display: flex; justify-content: center; align-items: center;">
+          <input class="search" type="text" placeholder="Search..." style="padding: 10px; border-radius: 5px; border: none; margin-right: 10px;">
+          <!-- <button class="search" type="submit" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; margin-right: 10px;">🔎 Search</button> -->
+          <button class="random" type="button" onclick="" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; cursor: pointer;">🎲</button>
+        </form>
+      </div>
+      <div class="results"></div>
     </div>
     
     <div id="graph"></div>

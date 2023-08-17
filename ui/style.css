@@ -4,6 +4,15 @@ body {
   background-color: #eed;
 }
 
+.icon-16 {
+  height: 16px;
+  width: 16px;
+}
+.icon-32 {
+  height: 32px;
+  /* width: 32px; */
+}
+
 #graph {
   width: 66vw;
   height: 100vh;
