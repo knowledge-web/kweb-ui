@@ -190,8 +190,16 @@ api.use((req, res, next) => {
   next()
 })
 
+api.get('/nodes', (req, res) => {
+  const nodes = getNodes()
+  // return only a list of { name, id }
+  const list = nodes.map(n => ({ name: n.Name, id: n.Id }))
+  res.send(list)
+})
+
 api.get('/nodes/:id?', (req, res) => {
-  const id = req.params.id || rootNode
+  let { id } = req.params
+  if (id === 'root') id = rootNode
   // const levels = req.query.levels || 1 // TODO
   const node = getNodes().find(n => n.Id === id)
   if (!node) return res.send({ })
