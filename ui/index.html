@@ -13,10 +13,30 @@
     <link rel="stylesheet" type="text/css" href="style.css">
   </head>
   <body>
-    <div id="info"><a href="/info">What is this?</a></div>
+    <style>
+      #search-bar {
+        position: absolute;
+        top: 4px;
+        left: 35%;
+        transform: translate(-50%);
+        z-index: 10;
+      }
+      #search-bar input[type="text"] {
+        width: 300px;
+      }
+    </style>
+    <div id="search-bar" style="display: flex; justify-content: center; align-items: center; position: absolute;">
+      <form style="display: flex; justify-content: center; align-items: center;">
+        <!-- <input class="search" type="text" placeholder="Search..." style="padding: 10px; border-radius: 5px; border: none; margin-right: 10px;"> -->
+        <!-- <button class="search" type="submit" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; margin-right: 10px;">🔎 Search</button> -->
+        <button class="random" type="button" onclick="" style="padding: 10px; border-radius: 5px; border: none; background-color: #008CBA; color: white; cursor: pointer;">🎲</button>
+      </form>
+    </div>
     
     <div id="graph"></div>
     <div id="content"></div>
+    
+    <div id="info"><a href="/info">What is this?</a></div>
     
     <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
     <script type="module" src="script.js"></script>

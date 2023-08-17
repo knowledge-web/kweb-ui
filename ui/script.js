@@ -22,7 +22,7 @@ const MODE = 'local' // TODO make 'external' work
 let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
 if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 
-async function fetchNode (x = '') {
+async function fetchNode (x = 'root') {
   console.log(`${apiUrl}/nodes/${x}`)
   const res = await fetch(`${apiUrl}/nodes/${x}`)
   const { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
@@ -167,6 +167,22 @@ async function main () {
   //   }
   // }
   // document.body.onresize = resizeGraph
+
+  async function getNodeList () {
+    const res = await fetch(`${apiUrl}/nodes/`)
+    const list = await res.json()
+    return list
+  }
+
+  let list = []
+  list = await getNodeList()
+
+  document.querySelector('#search-bar button.random').onclick = async function () {
+    console.log('random')
+    if (list.length === 0) list = await getNodeList()
+    const id = list[Math.floor(Math.random() * list.length)].id
+    goto(id)
+  }
 }
 
 main()
