@@ -193,7 +193,9 @@ api.use((req, res, next) => {
 api.get('/nodes', (req, res) => {
   const nodes = getNodes()
   // return only a list of { name, id }
-  const list = nodes.map(n => ({ name: n.Name, id: n.Id }))
+  // filter only normal nodes
+  let list = nodes.filter(n => n.Kind === Thoughts.Kind.Normal)
+  list = list.map(n => ({ name: n.Name, id: n.Id }))
   res.send(list)
 })
 
