@@ -157,7 +157,7 @@ async function main () {
   }
 
   function loadMap (nodes, id) {
-    let locations = {}
+    const locations = {}
     // extract locations for all nodes
     Object.values(nodes).forEach(node => {
       const location = extractLocation(node)
