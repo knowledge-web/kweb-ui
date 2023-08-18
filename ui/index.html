@@ -139,6 +139,10 @@
               }
             })
 
+            marker.addListener("click", () => {
+              window.location.hash = `id=${id}`
+            })
+
             markers.push(marker)
             if (id === mainId) {
               map.setCenter(results[0].geometry.location)
