@@ -41,6 +41,9 @@ function extractMeta (id) {
   txt = txt.replaceAll(/achievement\(s\):/ig, 'achievements:') // standardize
   txt = txt.replaceAll(/DATE\/PLACE OF DEATH\/AGE AT DEATH:/ig, 'DATE AND PLACE OF DEATH:')
 
+  txt = txt.replaceAll(/DATE AND PLACE OF BIRTH:/ig, 'Born:')
+  txt = txt.replaceAll(/DATE AND PLACE OF DEATH:/ig, 'Died:')
+
   const extract = [
     'NAME',
     'OTHER-NAME', // things only?
@@ -49,8 +52,8 @@ function extractMeta (id) {
     // PLACE INVENTED/BEGAN
     'ACHIEVEMENTS',
     'NICKNAME/ALIAS',
-    'DATE AND PLACE OF BIRTH',
-    'DATE AND PLACE OF DEATH',
+    'BORN',
+    'DIED',
     'CATEGORY', // things only?
     'DISCIPLINE',
     'FIELD',
