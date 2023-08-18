@@ -23,7 +23,6 @@ let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v
 if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 
 async function fetchNode (x = 'root') {
-  console.log(`${apiUrl}/nodes/${x}`)
   const res = await fetch(`${apiUrl}/nodes/${x}`)
   const { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
   return { nodes, links, id } // TODO return here instead!
@@ -33,6 +32,7 @@ async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
   const { nodes, links, id } = await fetchNode(x)
   loadContent(nodes[id])
+  loadMap(nodes, id)
 
   const gData = { nodes: Object.values(nodes), links }
   const controlType = 'trackball' // trackball / orbit / fly
@@ -48,7 +48,7 @@ async function main () {
   const guiElement = gui.domElement
   guiElement.style.position = 'absolute'
   guiElement.style.top = '0'
-  guiElement.style.left = '0'
+  guiElement.style.right = '0'
 
   const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
@@ -64,7 +64,7 @@ async function main () {
     .linkLabel('')
     .linkThreeObjectExtend(true)
     .linkThreeObject(link => {
-      console.log(link.name)
+      // console.log(link.name)
       // extend link with text sprite
       const sprite = new SpriteText(`${link.name}`)
       // sprite.color = link.color || 'white'
@@ -143,11 +143,34 @@ async function main () {
     element.scrollTop = 0
   }
 
+  function extractLocation (node) { // hack
+    console.log('extractLocation', node.meta)
+    if (!node || !node.meta || !node.meta.born) return
+    const { born } = node.meta
+    const location = born.split(';')[1]
+    console.log({ born })
+    if (location) return location
+    // work with "," instead of ";"
+    const regex = /\d{4},\s(.*)/
+    const match = born.match(regex)
+    if (!match || match.length < 2) return null // Pattern not found
+    const extracted = match[1]
+    return extracted.trim()
+  }
+
+  function loadMap (nodes, id) {
+    const node = nodes[id]
+    const location = extractLocation(node)
+    const event = new CustomEvent('show-location', { detail: location })
+    window.dispatchEvent(event)
+  }
+
   async function goto (id) {
     const { nodes, links } = await fetchNode(id)
     const gData = { nodes: Object.values(nodes), links }
     graph.graphData(gData)
     loadContent(nodes[id])
+    loadMap(nodes, id)
   }
 
   window.onhashchange = async function () {

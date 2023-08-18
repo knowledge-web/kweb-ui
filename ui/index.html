@@ -46,7 +46,25 @@
         color: #fff;
         background-color: rgba(255, 255, 255, 0.2);
       }
+      #map {
+        border-radius: 0 0 20px 0;
+        opacity: 0.75;
+        transition: opacity 0.5s ease-in-out;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 300px;
+        height: 300px;
+        z-index: 1;
+      }
+      #map:hover {
+        opacity: 1;
+        transition: opacity 0.1s ease-in-out;
+      }
     </style>
+
+    <div id="map"></div>
+
     <div id="search-container">
       <div id="search-bar" style="display: flex; justify-content: center; align-items: center;">
         <form style="display: flex; justify-content: center; align-items: center;">
@@ -65,5 +83,59 @@
     
     <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
     <script type="module" src="script.js"></script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDhy1d5cJL36CkfjIcgHRDiehuXxbQEFH0&callback=initMap"></script>
+    <script>
+
+      let mapInitLocation = false
+      let map = null
+      console.log('adding event listener')
+      window.addEventListener("show-location", function(event) {
+        const location = event.detail
+        // handle the event here
+        console.log("Location to show:", event.detail)
+        if (!map) return // FIXME
+        addMarker(location)
+      })
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: Math.random() * 180 - 90, lng: Math.random() * 360 - 180 },
+          zoom: 3,
+          disableDefaultUI: true
+        })
+      }
+
+      let marker = null
+      function addMarker (location) {
+        const geocoder = new google.maps.Geocoder()
+        // if location is empty, show zoomed out world map instead & remove marker
+        if (!location) {
+          map.setCenter({ lat: -55, lng: 10 }) // some place where you see only ocean :)
+          if (marker) {
+            marker.setMap(null)
+            marker = null
+          }
+          return
+        }
+        geocoder.geocode({ address: location }, (results, status) => {
+          if (status === "OK") {
+            if (!marker) {
+              marker = new google.maps.Marker({
+                position: results[0].geometry.location,
+                map
+              })
+            } else {
+              marker.setPosition(results[0].geometry.location)
+            }
+
+            map.setCenter(results[0].geometry.location)
+            map.panTo(marker.getPosition())
+          } else {
+            console.error("Geocode was not successful for the following reason: " + status)
+          }
+        })
+      }
+    </script>
   </body>
 </html>
