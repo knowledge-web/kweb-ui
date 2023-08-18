@@ -144,11 +144,9 @@ async function main () {
   }
 
   function extractLocation (node) { // hack
-    console.log('extractLocation', node.meta)
     if (!node || !node.meta || !node.meta.born) return
     const { born } = node.meta
     const location = born.split(';')[1]
-    console.log({ born })
     if (location) return location
     // work with "," instead of ";"
     const regex = /\d{4},\s(.*)/
@@ -159,9 +157,17 @@ async function main () {
   }
 
   function loadMap (nodes, id) {
-    const node = nodes[id]
-    const location = extractLocation(node)
-    const event = new CustomEvent('show-location', { detail: location })
+    let locations = {}
+    // extract locations for all nodes
+    Object.values(nodes).forEach(node => {
+      const location = extractLocation(node)
+      if (location) locations[node.id] = { id: node.id, name: node.name, location }
+    })
+
+    // if (!locations[id]) locations = {} // XXX if current node has no location, clear map ...don't do this!
+
+    // const location = extractLocation(node)
+    const event = new CustomEvent('show-location', { detail: { locations, mainId: id } })
     window.dispatchEvent(event)
   }
 

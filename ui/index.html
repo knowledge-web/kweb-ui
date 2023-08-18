@@ -89,13 +89,10 @@
 
       let mapInitLocation = false
       let map = null
-      console.log('adding event listener')
       window.addEventListener("show-location", function(event) {
-        const location = event.detail
-        // handle the event here
-        console.log("Location to show:", event.detail)
+        const { detail } = event
         if (!map) return // FIXME
-        addMarker(location)
+        addMarkers(detail)
       })
 
       function initMap() {
@@ -106,34 +103,48 @@
         })
       }
 
-      let marker = null
-      function addMarker (location) {
+      let markers = []
+      function addMarkers ({ locations, mainId }) {
+        const list = Object.values(locations)
         const geocoder = new google.maps.Geocoder()
+        
+        // clear all markers
+        markers.forEach(marker => marker.setMap(null))
+        markers = []
+
         // if location is empty, show zoomed out world map instead & remove marker
-        if (!location) {
+        if (!list.length) {
           map.setCenter({ lat: -55, lng: 10 }) // some place where you see only ocean :)
-          if (marker) {
-            marker.setMap(null)
-            marker = null
-          }
+          // if (!markers.length)  return
+          // markers.forEach(marker => marker.setMap(null))
+          // markers = markers.filter(m => m !== marker)
           return
         }
-        geocoder.geocode({ address: location }, (results, status) => {
-          if (status === "OK") {
-            if (!marker) {
-              marker = new google.maps.Marker({
-                position: results[0].geometry.location,
-                map
-              })
-            } else {
-              marker.setPosition(results[0].geometry.location)
-            }
 
-            map.setCenter(results[0].geometry.location)
-            map.panTo(marker.getPosition())
-          } else {
-            console.error("Geocode was not successful for the following reason: " + status)
-          }
+        list.forEach(({ id, name, location }) => {
+          geocoder.geocode({ address: location }, (results, status) => {
+            if (status !== "OK") return console.error("Geocode was not successful for the following reason: " + status)
+            const  marker = new google.maps.Marker({
+              position: results[0].geometry.location,
+              map,
+              title: name,
+              icon: id === mainId ? null : {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: '#888',
+                fillOpacity: 0.6,
+                strokeColor: '#444',
+                strokeOpacity: 0.9,
+                strokeWeight: 1,
+                scale: 4
+              }
+            })
+
+            markers.push(marker)
+            if (id === mainId) {
+              map.setCenter(results[0].geometry.location)
+              map.panTo(marker.getPosition())
+            }
+          })
         })
       }
     </script>
