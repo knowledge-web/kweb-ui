@@ -211,7 +211,7 @@ async function main () {
   document.querySelector('#search-bar button.random').onclick = async function () {
     if (list.length === 0) list = await getNodeList() // XXX does the request again, not great
     const id = list[Math.floor(Math.random() * list.length)].id
-    goto(id)
+    window.location.hash = `id=${id}`
   }
 
   document.querySelector('#search-bar .search').oninput = async function () {
