@@ -21,6 +21,12 @@ body {
   font-family: 'Droid Sans'; /* TODO improve? */
   position: relative;
   top: -1.5em;
+  cursor: pointer;
+}
+
+.node-label.hover {
+  z-index: 100;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 #content {
