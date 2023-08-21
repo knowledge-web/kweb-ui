@@ -1,7 +1,12 @@
 body {
   margin: 0;
   overflow: hidden;
-  background-color: #eed;
+}
+
+html { /* stars background */
+  background: #001 no-repeat center center fixed;
+  background-image: linear-gradient(to right, rgba(0,0,16, 0.85) 0 100%), url(./stars.jpg);
+  background-size: cover;
 }
 
 .icon-16 {
@@ -37,7 +42,10 @@ body {
   height: 100vh;
   overflow: scroll;
   padding: 0;
+  padding-left: 16px;
   font-family: Roboto;
+
+  background-color: #eed;
 }
 
 #content .content-type { font-family: monospace; position: absolute; top: 0; right: 0; opacity: 0.25; }

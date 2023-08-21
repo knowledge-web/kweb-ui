@@ -52,6 +52,7 @@ async function main () {
 
   const w = document.documentElement.clientWidth * (1 - (window.ratio || 0.33)) - 64 // 64 = sidebar width? I don't know...
   const graph = ForceGraph3D({ controlType, extraRenderers: [new CSS2DRenderer()] })(document.getElementById('graph'))
+    .backgroundColor('rgba(0,0,0,0)')
     .width(w)
     .numDimensions(settings.dimensions)
     .warmupTicks(100)
