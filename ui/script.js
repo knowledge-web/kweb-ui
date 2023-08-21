@@ -92,12 +92,13 @@ async function main () {
       // const img = 'https://picsum.photos/seed/derp/150/150' // random profile image
       // nodeEl.innerHTML = `${node.name}<br><img class="prof" src="${img}" />`
       nodeEl.style.color = node.color || 'rgba(255,255,255,0.8)'
-      nodeEl.style['pointer-events'] = 'all' // FIXME breaks scroll wheel zoom etc
       nodeEl.className = 'node-label'
       // nodeEl.setAttribute('data-id', node.id)
-      nodeEl.addEventListener('pointerdown', () => { window.location.hash = `id=${node.id}` })
-      nodeEl.addEventListener('pointerover', () => { nodeEl.classList.add('hover') })
-      nodeEl.addEventListener('pointerout', () => { nodeEl.classList.remove('hover') })
+      // FIXME the below work but breaks scroll wheel zoom etc...
+      // nodeEl.style['pointer-events'] = 'all'
+      // nodeEl.addEventListener('pointerdown', () => { window.location.hash = `id=${node.id}` })
+      // nodeEl.addEventListener('pointerover', () => { nodeEl.classList.add('hover') })
+      // nodeEl.addEventListener('pointerout', () => { nodeEl.classList.remove('hover') })
       return new CSS2DObject(nodeEl)
     })
     .nodeThreeObjectExtend(true)
