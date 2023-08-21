@@ -59,6 +59,7 @@ async function main () {
     .cooldownTicks(0)
     .graphData(gData)
     .nodeRelSize(2)
+    .linkHoverPrecision(2)
     .nodeColor(node => node.color || 'rgba(255,255,255,0.8)')
     .nodeLabel(node => node.oneLiner)
     // Link text
@@ -93,9 +94,9 @@ async function main () {
       nodeEl.style['pointer-events'] = 'all' // FIXME breaks scroll wheel zoom etc
       nodeEl.className = 'node-label'
       // nodeEl.setAttribute('data-id', node.id)
-      nodeEl.addEventListener('pointerdown', () => { window.location.hash = `id=${node.id}` }, true)
-      nodeEl.addEventListener('pointerover', () => { nodeEl.classList.add('hover') }, true)
-      nodeEl.addEventListener('pointerout', () => { nodeEl.classList.remove('hover') }, true)
+      nodeEl.addEventListener('pointerdown', () => { window.location.hash = `id=${node.id}` })
+      nodeEl.addEventListener('pointerover', () => { nodeEl.classList.add('hover') })
+      nodeEl.addEventListener('pointerout', () => { nodeEl.classList.remove('hover') })
       return new CSS2DObject(nodeEl)
     })
     .nodeThreeObjectExtend(true)
