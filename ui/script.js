@@ -1,4 +1,5 @@
 /* global localStorage, fetch, ForceGraph3D, SpriteText */
+// import { UnrealBloomPass } from '//unpkg.com/three/examples/jsm/postprocessing/UnrealBloomPass.js'
 import { CSS2DRenderer, CSS2DObject } from '//unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js'
 import { GUI } from '//unpkg.com/dat.gui/build/dat.gui.module.js'
 const { marked } = window
@@ -113,6 +114,13 @@ async function main () {
       // goto(node.id)
       window.location.hash = `id=${node.id}`
     })
+
+  // TODO Transparent background: https://stackoverflow.com/a/62858845 ...then enable
+  // const bloomPass = new UnrealBloomPass()
+  // bloomPass.strength = 2
+  // bloomPass.radius = 0.5
+  // bloomPass.threshold = 0.1
+  // graph.postProcessingComposer().addPass(bloomPass)
 
   graph.cameraPosition({ z: 275 })
   // graph.onEngineStop(() => graph.zoomToFit(80)) // NOTE not perfect
