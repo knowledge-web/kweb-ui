@@ -19,7 +19,7 @@ marked.setOptions({
   // xhtml: false
 })
 
-const MODE = 'local' // TODO make 'external' work
+const MODE = 'external' // TODO make 'external' work
 let apiUrl = MODE === 'local' ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
 if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 
