@@ -65,6 +65,9 @@ html { /* stars background */
   top: 10px;
 }
 
+#content a.wiki-link {
+  opacity: 0.25;
+}
 
 #search-container {
   position: absolute;
