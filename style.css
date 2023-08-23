@@ -122,3 +122,9 @@ html { /* stars background */
   padding: 5px;
 }
 #info a { color: #888; }
+
+#stats {
+  font-size: 12px;
+  color: white;
+  opacity: 0.33;
+}

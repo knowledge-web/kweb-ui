@@ -241,6 +241,16 @@ async function main () {
     }).join('')
     document.querySelector('#search-container .results').innerHTML = html
   }
+
+  async function fetchStats () {
+    const res = await fetch(`${apiUrl}/stats`)
+    const { wikiLinks } = await res.json() // id = current node id / selected (if x is empty)
+    const { found, total } = wikiLinks
+    const percent = ((found / total) * 100).toFixed(0)
+    document.querySelector('#stats .wiki-links').innerHTML = `${found} / ${total} (${percent}%)`
+  }
+
+  fetchStats()
 }
 
 main()
