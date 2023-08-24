@@ -247,11 +247,17 @@ async function main () {
   }
 
   async function fetchStats () {
+    const prettyNr = (nr) => nr.toLocaleString('en-US').replaceAll(',', ' ')
+
     const res = await fetch(`${apiUrl}/stats`)
-    const { wikiLinks } = await res.json() // id = current node id / selected (if x is empty)
+    const { nodes, links, wikiLinks } = await res.json() // id = current node id / selected (if x is empty)
+    
+    document.querySelector('#stats .nodes').innerHTML = prettyNr(nodes)
+    document.querySelector('#stats .links').innerHTML = prettyNr(links)
+    
     const { found, total } = wikiLinks
     const percent = ((found / total) * 100).toFixed(0)
-    document.querySelector('#stats .wiki-links').innerHTML = `${found} / ${total} (${percent}%)`
+    document.querySelector('#stats .wiki-links').innerHTML = `${prettyNr(found)} / ${prettyNr(total)} (${percent}%)`
   }
 
   async function fetchWikiLinks () {
