@@ -4,7 +4,7 @@ This is the code behind: https://k-web.ismandatory.com/.
 Short term vision is being described [here](https://burkives.notion.site/K-Web-User-Interface-Minimal-Product-dc76722ef10b465c8d987e8f16bedc95?pvs=4).
 
 Basically the plan is to build a better version of:  
-![Screenshot of 3 k-web prototypes](old-prototypes.png)
+![Screenshot of 3 k-web prototypes](img/old-prototypes.png)
 
 ## Working on it
 It will talk to the ~official API (https://k-web.ismandatory.com/api/v0).  
