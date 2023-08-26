@@ -163,25 +163,11 @@ async function main () {
     element.scrollTop = 0
   }
 
-  function extractLocation (node) { // hack
-    if (!node || !node.meta || !node.meta.born) return
-    const { born } = node.meta
-    const location = born.split(';')[1]
-    if (location) return location
-    // work with "," instead of ";"
-    const regex = /\d{4},\s(.*)/
-    const match = born.match(regex)
-    if (!match || match.length < 2) return null // Pattern not found
-    const extracted = match[1]
-    return extracted.trim()
-  }
-
   function loadMap (nodes, id) {
     const locations = {}
     // extract locations for all nodes
     Object.values(nodes).forEach(node => {
-      const location = extractLocation(node)
-      if (location) locations[node.id] = { id: node.id, name: node.name, location }
+      if (node.birth.place) locations[node.id] = { id: node.id, name: node.name, location: node.birth.place }
     })
 
     // if (!locations[id]) locations = {} // XXX if current node has no location, clear map ...don't do this!
