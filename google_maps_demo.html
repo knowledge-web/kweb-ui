@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps Web Component Demo</title>
+    <script>
+        class GoogleMap extends HTMLElement {
+            connectedCallback() {
+                this.mapDiv = document.createElement('div');
+                this.mapDiv.style.width = '100%';
+                this.mapDiv.style.height = '400px';
+                this.mapDiv.style.backgroundColor = 'gray'; // Gray background
+                this.appendChild(this.mapDiv);
+            }
+
+            initMap(apiKey) {
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}`;
+                script.onload = () => {
+                    const mapOptions = {
+                        zoom: 1, // Whole world zoomed out
+                        center: new google.maps.LatLng(0, 0)
+                    };
+                    this.map = new google.maps.Map(this.mapDiv, mapOptions);
+                };
+                document.head.appendChild(script);
+            }
+
+            setLocations(locations) {
+                const geocoder = new google.maps.Geocoder();
+
+                locations.forEach((location, index) => {
+                    geocoder.geocode({ address: location.name }, (results, status) => {
+                        if (status === 'OK') {
+                            const position = results[0].geometry.location;
+                            const marker = new google.maps.Marker({
+                                position,
+                                map: this.map,
+                                icon: location.primary
+                                    ? null // Default red pin
+                                    : {
+                                        path: google.maps.SymbolPath.CIRCLE,
+                                        scale: 5, // Smaller gray dot
+                                        fillColor: '#808080',
+                                        fillOpacity: 1,
+                                        strokeWeight: 0
+                                    }
+                            });
+
+                            if (location.primary) {
+                                this.map.setCenter(position);
+                                this.map.setZoom(8); // Centered zoom
+                            }
+
+                            // Custom event on hover
+                            marker.addListener('mouseover', () => {
+                                const event = new CustomEvent('pin-hover', {
+                                    detail: location.name
+                                });
+                                this.dispatchEvent(event);
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        customElements.define('google-map', GoogleMap);
+
+        function initMap() {
+            const apiKey = document.getElementById('apiKey').value;
+            const map = document.getElementById('myMap');
+            map.initMap(apiKey);
+        }
+
+        function addLocations() {
+            const map = document.getElementById('myMap');
+            map.setLocations([
+                { name: 'Göteborg, Sweden', primary: true },
+                { name: 'Stockholm, Sweden' },
+                { name: 'Malmö, Sweden' },
+                { name: 'Uppsala, Sweden' }
+            ]);
+        }
+    </script>
+    <style>
+        #info {
+            margin: 20px;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Maps Web Component Demo</h1>
+    <div id="info">
+        <label for="apiKey">Enter API Key:</label>
+        <input type="text" id="apiKey">
+        <button onclick="initMap()">Initialize Map</button>
+        <button onclick="addLocations()">Add Locations</button>
+        <p id="hoverInfo"></p>
+    </div>
+    <google-map id="myMap"></google-map>
+    <script>
+        document.getElementById('myMap').addEventListener('pin-hover', (event) => {
+            document.getElementById('hoverInfo').innerText = 'Hovered over: ' + event.detail;
+        });
+    </script>
+</body>
+</html>

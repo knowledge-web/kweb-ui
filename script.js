@@ -147,7 +147,7 @@ async function main () {
     return `<div class="content-type">${type}</div>
       <details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
       <div class="type ${!node.type.name ? 'empty' : ''}">Type: <img class="icon icon-16" src="${apiUrl}/icons/${node.type.id}" /> ${node.type.name}</div>
-      <h1 style="color: ${node.color};"><img class="icon icon-32" src="${apiUrl}/icons/${node.id}" /> ${node.name}</h1>
+      <h1 style="color: ${node.color};"><img class="icon icon-32" src="${apiUrl}/icons/${node.id}" onerror="this.style.display='none'" /> ${node.name}</h1>
       <a class="wiki-link" href="${node.wikipedia}" target="_blank">${(node.wikipedia).split('/').pop() || 'NONE'}</a>
       <div class="tags">Tags: ${node.tags.length ? node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ') : '[none]'}</div>
       <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>

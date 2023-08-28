@@ -1,0 +1,41 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Maps Web Component Demo</title>
+    <script src="google-map.js"></script>
+    <style>
+        #info {
+            margin: 20px;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Google Maps Web Component Demo</h1>
+    <google-map api-key="AIzaSyDhy1d5cJL36CkfjIcgHRDiehuXxbQEFH0" id="myMap"></google-map>
+    <div id="info">
+        <button onclick="addLocations()">Add Locations</button>
+        <p id="hoverInfo"></p>
+    </div>
+    <script>
+        const map = document.getElementById('myMap');
+
+        function addLocations() {
+            map.setLocations([
+                { name: 'Göteborg, Sweden', primary: true },
+                { name: 'Stockholm, Sweden' },
+                { name: 'Malmö, Sweden' },
+                { name: 'Uppsala, Sweden' }
+            ]);
+        }
+
+        map.addEventListener('pin-hover', (event) => {
+            document.getElementById('hoverInfo').innerText = 'Hovered over: ' + event.detail;
+        });
+    </script>
+</body>
+</html>
