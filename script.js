@@ -144,8 +144,10 @@ async function main () {
     }
 
     const metaString = JSON.stringify(node.meta, null, 2)
+    const wikidataString = JSON.stringify(node.wikidata, null, 2)
     return `<div class="content-type">${type}</div>
       <details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
+      <details class="debug metadata wikidata ${wikidataString === '{}' ? 'empty' : ''}"><summary>Wikidata</summary><pre>${wikidataString}</pre></details>
       <div class="type ${!node.type.name ? 'empty' : ''}">Type: <img class="icon icon-16" src="${apiUrl}/icons/${node.type.id}" /> ${node.type.name}</div>
       <h1 style="color: ${node.color};"><img class="icon icon-32" src="${apiUrl}/icons/${node.id}" onerror="this.style.display='none'" /> ${node.name}</h1>
       <a class="wiki-link" href="${node.wikipedia}" target="_blank">${(node.wikipedia).split('/').pop() || 'NONE'}</a>
