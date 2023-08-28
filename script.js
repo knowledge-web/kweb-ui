@@ -32,7 +32,6 @@ async function fetchNode (x = 'root') {
 async function main () {
   const x = window.location.hash.split('id=')[1] // Ex /#id=...
   const { nodes, links, id } = await fetchNode(x)
-  let wikiLinks = {}
   loadContent(nodes[id])
   loadMap(nodes, id)
 
@@ -144,14 +143,12 @@ async function main () {
       type = 'html'
     }
 
-    const wikiLink = wikiLinks[node.name] || ''
-
     const metaString = JSON.stringify(node.meta, null, 2)
     return `<div class="content-type">${type}</div>
       <details class="debug metadata ${metaString === '{}' ? 'empty' : ''}"><summary>Meta data</summary><pre>${metaString}</pre></details>
       <div class="type ${!node.type.name ? 'empty' : ''}">Type: <img class="icon icon-16" src="${apiUrl}/icons/${node.type.id}" /> ${node.type.name}</div>
       <h1 style="color: ${node.color};"><img class="icon icon-32" src="${apiUrl}/icons/${node.id}" /> ${node.name}</h1>
-      <a class="wiki-link" href="${wikiLink}" target="_blank">${(wikiLink).split('/').pop() || 'NONE'}</a>
+      <a class="wiki-link" href="${node.wikipedia}" target="_blank">${(node.wikipedia).split('/').pop() || 'NONE'}</a>
       <div class="tags">Tags: ${node.tags.length ? node.tags.map(tag => `<span class="tag">${tag.name}</span>`).join(', ') : '[none]'}</div>
       <div class="one-liner ${!node.oneLiner ? 'empty' : ''}">${node.oneLiner || '[ one-liner ]'}</div>
       ${html}`
@@ -236,22 +233,13 @@ async function main () {
     const prettyNr = (nr) => nr.toLocaleString('en-US').replaceAll(',', ' ')
 
     const res = await fetch(`${apiUrl}/stats`)
-    const { nodes, links, wikiLinks } = await res.json() // id = current node id / selected (if x is empty)
-    
+    const { nodes, links } = await res.json() // id = current node id / selected (if x is empty)
+   
+    console.log({ nodes, links })
     document.querySelector('#stats .nodes').innerHTML = prettyNr(nodes)
-    document.querySelector('#stats .links').innerHTML = prettyNr(links)
-    
-    const { found, total } = wikiLinks
-    const percent = ((found / total) * 100).toFixed(0)
-    document.querySelector('#stats .wiki-links').innerHTML = `${prettyNr(found)} / ${prettyNr(total)} (${percent}%)`
+    document.querySelector('#stats .links').innerHTML = prettyNr(links) 
   }
 
-  async function fetchWikiLinks () {
-    const res = await fetch(`${apiUrl}/wiki-links`)
-    return res.json()
-  }
-
-  wikiLinks = await fetchWikiLinks()
   fetchStats()
 }
 
