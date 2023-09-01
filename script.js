@@ -131,7 +131,8 @@ async function main () {
   // graph.numDimensions(2); // Re-heat simulation
 
   function contentToHtml (node) {
-    const { content } = node
+    if (!node || !node.content) return ''
+    const content = node.content
     let html = ''
     let type = ''
     if (content.md) {
@@ -166,6 +167,7 @@ async function main () {
     const locations = {}
     // extract locations for all nodes
     Object.values(nodes).forEach(node => {
+      if (!node.birth) return
       if (node.birth.place) locations[node.id] = { id: node.id, name: node.name, location: node.birth.place }
     })
 
