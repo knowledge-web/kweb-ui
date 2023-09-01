@@ -38,6 +38,26 @@
       </div>
       <br>
       <a href="/info.html">What is this?</a>
+      
+      <div>
+        <label for="api-url">API URL:</label>
+        <input type="text" id="api-url" name="api-url">
+        <button id="save-api-url">Save</button>
+      </div>
+  
+      <script>
+        const apiUrlInput = document.getElementById('api-url');
+        const saveApiUrlButton = document.getElementById('save-api-url');
+  
+        // Show the current value of localStorage.apiUrl in the input field
+        apiUrlInput.value = localStorage.apiUrl;
+  
+        // Save the value of the input field to localStorage.apiUrl when the button is clicked
+        saveApiUrlButton.addEventListener('click', () => {
+          localStorage.apiUrl = apiUrlInput.value;
+        });
+      </script>
+
     </div>
     
     <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
