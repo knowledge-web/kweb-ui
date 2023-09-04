@@ -23,9 +23,19 @@ const MODE = localStorage.getItem('mode') || 'local'
 let apiUrl = (MODE === 'local') ? '/api/v0' : 'https://k-web.ismandatory.com/api/v0'
 if (localStorage.getItem('apiUrl')) apiUrl = localStorage.getItem('apiUrl')
 
+function toMap (arr) {
+  const map = {}
+  arr.forEach(item => {
+    map[item.id] = item
+  })
+  return map
+}
+
 async function fetchNode (x = 'root') {
   const res = await fetch(`${apiUrl}/nodes/${x}`)
-  const { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
+  let { nodes, links, id } = await res.json() // id = current node id / selected (if x is empty)
+  if (Array.isArray(nodes)) nodes = toMap(nodes) // if nodes is array make into object with id as key
+  if (!id) id = Object.keys(nodes)[0]
   return { nodes, links, id } // TODO return here instead!
 }
 
@@ -132,7 +142,8 @@ async function main () {
 
   function contentToHtml (node) {
     if (!node || !node.content) return ''
-    const content = node.content
+    let content = node.content
+    if (typeof content !== 'object') content = { md: content }
     let html = ''
     let type = ''
     if (content.md) {
@@ -143,6 +154,10 @@ async function main () {
       html = content.html
       type = 'html'
     }
+
+    node.type = node.type || {}
+    node.wikipedia = node.wikipedia || node.wikilink || '' // wikilink is the new (.py)
+    node.tags = node.tags || []
 
     const metaString = JSON.stringify(node.meta, null, 2)
     const wikidataString = JSON.stringify(node.wikidata, null, 2)
