@@ -79,7 +79,7 @@ async function main () {
     .linkThreeObject(link => {
       // console.log(link.name)
       // extend link with text sprite
-      const sprite = new SpriteText(`${link.name}`)
+      const sprite = new SpriteText(`${link.name || ''}`)
       // sprite.color = link.color || 'white'
       sprite.color = 'rgba(127, 196, 255, 0.66)'
       sprite.textHeight = 2
